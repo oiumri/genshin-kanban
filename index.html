@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genshin Ultimate Archive 3.0 - Horizontal</title>
+    <title>Genshin Ultimate Archive 3.5 - Profile Update</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #16161c; color: #eee; margin: 0; padding: 30px; font-size: 18px; }
         
@@ -21,46 +21,67 @@
         .char-card { width: 150px; height: 200px; border-radius: 15px; cursor: grab; transition: 0.2s; display: flex; flex-direction: column; align-items: center; padding-top: 20px; position: relative; overflow: hidden; }
         .rarity-5 { background: linear-gradient(180deg, #815b35, #ffac54); }
         .rarity-4 { background: linear-gradient(180deg, #514170, #8a59cc); }
-        .char-icon { width: 110px; height: 110px; border-radius: 50%; background: #2b2b36; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); }
+        .char-icon { width: 110px; height: 110px; border-radius: 50%; background: #2b2b36; border: 3px solid rgba(255,255,255,0.3); object-fit: cover; }
         .char-name { margin-top: 10px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 3px black; }
         .char-lvl { position: absolute; bottom: 10px; background: rgba(0,0,0,0.8); padding: 4px 12px; border-radius: 12px; font-size: 11px; color: #d3bc8e; border: 1px solid #d3bc8e; }
 
         .add-btn { width: 150px; height: 200px; border: 3px dashed #3f3f50; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 50px; cursor: pointer; color: #3f3f50; }
 
+        /* Модалка */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: #1e1e26; width: 1150px; padding: 35px; border-radius: 20px; display: grid; grid-template-columns: 1fr; gap: 30px; max-height: 95vh; overflow-y: auto; border: 1px solid #3f3f50; }
+        .modal-content { background: #1e1e26; width: 1200px; padding: 35px; border-radius: 20px; border: 1px solid #3f3f50; max-height: 95vh; overflow-y: auto; }
         
-        /* ГОРИЗОНТАЛЬНЫЙ РЯД СЛОТОВ */
-        .equipment-row { display: flex; flex-wrap: wrap; gap: 25px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; }
-        .slot-item { display: flex; align-items: center; gap: 15px; }
-        .slot { width: 90px; height: 90px; background: #16161c; border-radius: 12px; border: 1px solid #3f3f50; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; position: relative; }
+        .modal-header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 15px; }
+        
+        /* Компоновка Профиля внутри модалки */
+        .profile-id-card { display: flex; gap: 30px; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 20px; margin-bottom: 30px; border: 1px solid rgba(211, 188, 142, 0.1); }
+        
+        .char-big-profile { display: flex; flex-direction: column; align-items: center; width: 220px; flex-shrink: 0; border-right: 1px solid #3f3f50; padding-right: 20px; }
+        .char-big-icon { width: 160px; height: 160px; border-radius: 50%; background: #2b2b36; border: 4px solid #d3bc8e; object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 20px rgba(211, 188, 142, 0.2); }
+        .char-big-name { font-size: 24px; font-weight: bold; color: #d3bc8e; text-align: center; margin-bottom: 5px; }
+        .char-big-lvl { font-size: 16px; color: #888; letter-spacing: 1px; }
+
+        .equipment-block { flex-grow: 1; }
+        .equipment-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 20px; }
+        .slot-item { display: flex; align-items: center; gap: 12px; }
+        .slot { width: 80px; height: 80px; background: #16161c; border-radius: 12px; border: 1px solid #3f3f50; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .slot img { width: 100%; height: 100%; object-fit: cover; }
-        .slot-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.7); width: 100%; text-align: center; color: #eee; font-size: 11px; padding: 3px 0; }
-        .slot-text { font-size: 18px; font-weight: bold; color: #d3bc8e; max-width: 150px; }
+        .slot-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.7); width: 100%; text-align: center; color: #eee; font-size: 10px; padding: 2px 0; }
+        .slot-text { font-size: 16px; font-weight: bold; color: #d3bc8e; max-width: 140px; line-height: 1.2; }
 
-        .add-set-btn { background: #3f3f50; color: #d3bc8e; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 20px; }
-
-        .res-group { display: flex; gap: 12px; }
-        .res-slot { width: 80px; height: 80px; background: #111; border-radius: 10px; border: 1px solid #444; overflow: hidden; position: relative; }
+        .res-group { display: flex; gap: 10px; margin-left: auto; }
+        .res-slot { width: 70px; height: 70px; background: #111; border-radius: 10px; border: 1px solid #444; overflow: hidden; position: relative; }
         .res-slot img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* КОЛОНКИ КОНТЕНТА */
         .main-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; }
 
-        details { background: #1a1a24; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; }
+        /* Туду и Отряд */
+        #vTodos { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; min-height: 120px; margin-bottom: 15px; }
+        .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .todo-check { width: 20px; height: 20px; cursor: pointer; }
+        .todo-text { flex-grow: 1; font-size: 16px; }
+        .todo-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 22px; }
+        .add-todo-container { display: flex; gap: 10px; margin-bottom: 25px; }
+        .add-todo-btn { background: #d3bc8e; color: #16161c; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        .team-box { background: #16161c; padding: 20px; border-radius: 15px; display: flex; justify-content: space-around; border: 1px solid #3f3f50; }
+        .teammate { display: flex; flex-direction: column; align-items: center; width: 30%; }
+        .tm-icon { width: 75px; height: 75px; border-radius: 50%; background: #333; margin-bottom: 10px; border: 2px solid #444; }
+        .tm-gear-row { display: flex; gap: 6px; }
+        .tm-slot { width: 45px; height: 45px; background: #222; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
+
+        /* Раскрывушки справа */
+        details { background: #1a1a24; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 12px; }
         summary { cursor: pointer; color: #d3bc8e; font-weight: bold; font-size: 18px; }
-        .detail-text { padding: 10px; white-space: pre-wrap; color: #ccc; font-size: 16px; line-height: 1.6; }
+        .detail-text { padding: 10px; white-space: pre-wrap; color: #ccc; font-size: 16px; line-height: 1.5; }
 
-        .team-box { background: #16161c; padding: 25px; border-radius: 15px; display: flex; justify-content: space-around; border: 1px solid #3f3f50; margin-top: 10px; }
-        .teammate { display: flex; flex-direction: column; align-items: center; width: 220px; }
-        .tm-icon { width: 90px; height: 90px; border-radius: 50%; background: #333; margin-bottom: 12px; border: 2px solid #444; }
-        .tm-gear-row { display: flex; gap: 8px; }
-        .tm-slot { width: 50px; height: 50px; background: #222; border: 1px solid #444; border-radius: 6px; overflow: hidden; position: relative; }
-
-        .edit-panel { display: none; background: #2a2a35; padding: 30px; border-radius: 15px; border: 1px solid #d3bc8e; margin-bottom: 20px; }
-        .edit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        input, textarea, select { background: #16161c; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; font-size: 15px; width: 100%; box-sizing: border-box; }
-        .btn-toggle-calc { background: #1a1a24; color: #d3bc8e; border: 1px solid #d3bc8e; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        /* Редактор */
+        .edit-panel { display: none; background: #2a2a35; padding: 25px; border-radius: 15px; border: 1px solid #d3bc8e; margin-bottom: 25px; }
+        .edit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        input, textarea, select { background: #16161c; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        
+        .add-set-btn { background: #3f3f50; color: #d3bc8e; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .btn-toggle-calc { background: #1a1a24; color: #d3bc8e; border: 1px solid #d3bc8e; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -98,21 +119,18 @@
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 15px;">
-                <h2 id="mName" style="color:#d3bc8e; margin:0"></h2>
-                <div>
-                    <button onclick="toggleEdit()" style="padding: 10px 20px; cursor:pointer">⚙️ РЕДАКТИРОВАТЬ</button>
-                    <button onclick="closeModal()" style="background:none; border:none; color:#888; font-size:40px; cursor:pointer; margin-left:20px">×</button>
-                </div>
+            <div class="modal-header">
+                <button onclick="toggleEdit()" style="padding: 8px 20px; cursor:pointer; background:#3f3f50; border:none; color:#d3bc8e; border-radius:8px; font-weight:bold">⚙️ РЕДАКТИРОВАТЬ</button>
+                <button onclick="closeModal()" style="background:none; border:none; color:#888; font-size:40px; cursor:pointer">×</button>
             </div>
 
             <div class="edit-panel" id="editPanel">
                 <div class="edit-grid">
                     <div class="edit-col">
                         <label>ОСНОВНОЕ</label>
-                        <input type="text" id="eName"><input type="text" id="eImg"><input type="text" id="eLvl">
+                        <input type="text" id="eName" placeholder="Имя"><input type="text" id="eImg" placeholder="Фото URL"><input type="text" id="eLvl" placeholder="Ур | C">
                         <select id="eRar"><option value="rarity-5">5★</option><option value="rarity-4">4★</option></select>
-                        <label>СНАРЯЖЕНИЕ + ТЕКСТ</label>
+                        <label>СНАРЯЖЕНИЕ</label>
                         <input type="text" id="eW" placeholder="Оружие URL"><input type="text" id="eWt" placeholder="Название оружия">
                         <input type="text" id="eA1" placeholder="Сет 1 URL"><input type="text" id="eA1t" placeholder="Название сета 1">
                         <input type="text" id="eA2" placeholder="Сет 2 URL"><input type="text" id="eA2t" placeholder="Название сета 2">
@@ -126,7 +144,7 @@
                     </div>
                     <div class="edit-col">
                         <label>ТЕКСТЫ</label>
-                        <textarea id="eRot" rows="7"></textarea><textarea id="eNotes" rows="7"></textarea>
+                        <textarea id="eRot" rows="7" placeholder="Ротация..."></textarea><textarea id="eNotes" rows="7" placeholder="Заметки..."></textarea>
                     </div>
                     <div class="edit-col">
                         <label>ОТРЯД</label>
@@ -141,33 +159,55 @@
                         </div>
                     </div>
                 </div>
-                <button onclick="saveData()" style="width:100%; margin-top:20px; background:#d3bc8e; padding:15px; font-weight:bold; border:none; cursor:pointer">СОХРАНИТЬ ВСЁ</button>
-                <button onclick="deleteChar()" style="width:100%; margin-top:10px; background:#ff4444; color:white; border:none; padding:10px; cursor:pointer">УДАЛИТЬ ПЕРСОНАЖА</button>
+                <button onclick="saveData()" style="width:100%; margin-top:20px; background:#d3bc8e; padding:15px; font-weight:bold; border:none; cursor:pointer; border-radius:10px">СОХРАНИТЬ ВСЁ</button>
+                <button onclick="deleteChar()" style="width:100%; margin-top:10px; background:#ff4444; color:white; border:none; padding:10px; cursor:pointer; border-radius:10px">УДАЛИТЬ ПЕРСОНАЖА</button>
             </div>
 
-            <div class="equipment-row">
-                <div class="slot-item"><div class="slot" id="vW"></div><div class="slot-text" id="vWt"></div></div>
-                
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div class="slot-item"><div class="slot" id="vA1"></div><div class="slot-text" id="vA1t"></div></div>
-                    <button class="add-set-btn" id="btnPlusSet" onclick="toggleSet2()">+</button>
-                    <div class="slot-item" id="wrapA2" style="display:none"><div class="slot" id="vA2"></div><div class="slot-text" id="vA2t"></div></div>
+            <div class="profile-id-card">
+                <div class="char-big-profile">
+                    <img id="vBigIcon" src="" class="char-big-icon" onerror="this.style.opacity='0'">
+                    <div id="vBigName" class="char-big-name"></div>
+                    <div id="vBigLvl" class="char-big-lvl"></div>
                 </div>
 
-                <div class="res-group">
-                    <div class="res-slot" id="vB"></div><div class="res-slot" id="vBk"></div>
+                <div class="equipment-block">
+                    <div class="section-header" style="font-size:14px; margin-bottom:10px">ЭКИПИРОВКА & ФАРМ</div>
+                    <div class="equipment-row">
+                        <div class="slot-item">
+                            <div class="slot" id="vW"></div>
+                            <div class="slot-text" id="vWt"></div>
+                        </div>
+                        <div class="slot-item">
+                            <div class="slot" id="vA1"></div>
+                            <div class="slot-text" id="vA1t"></div>
+                        </div>
+                        <button class="add-set-btn" id="btnPlusSet" onclick="toggleSet2()">+</button>
+                        <div class="slot-item" id="wrapA2" style="display:none">
+                            <div class="slot" id="vA2"></div>
+                            <div class="slot-text" id="vA2t"></div>
+                        </div>
+                        <div class="res-group">
+                            <div class="res-slot" id="vB"></div>
+                            <div class="res-slot" id="vBk"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="main-layout">
                 <div id="viewLeft">
-                    <div id="vTodos" style="background:#16161c; padding:20px; border-radius:15px; min-height:150px; margin-bottom:20px"></div>
-                    <input type="text" id="newTodo" placeholder="+ Добавить задачу..." onkeydown="if(event.key==='Enter') addTodo()">
+                    <div class="section-header" style="font-size:14px">ЗАДАЧИ</div>
+                    <div id="vTodos"></div>
+                    <div class="add-todo-container">
+                        <input type="text" id="newTodo" placeholder="+ Добавить задачу..." onkeydown="if(event.key==='Enter') addTodo()">
+                        <button class="add-todo-btn" onclick="addTodo()">ДОБАВИТЬ</button>
+                    </div>
                     
+                    <div class="section-header" style="font-size:14px">ОТРЯД</div>
                     <div class="team-box">
-                        <div class="teammate"><img class="tm-icon" id="vS1i"><b id="vS1n"></b><div class="tm-gear-row"><div class="tm-slot" id="vS1w"></div><div class="tm-slot" id="vS1s"></div></div></div>
-                        <div class="teammate"><img class="tm-icon" id="vS2i"><b id="vS2n"></b><div class="tm-gear-row"><div class="tm-slot" id="vS2w"></div><div class="tm-slot" id="vS2s"></div></div></div>
-                        <div class="teammate"><img class="tm-icon" id="vS3i"><b id="vS3n"></b><div class="tm-gear-row"><div class="tm-slot" id="vS3w"></div><div class="tm-slot" id="vS3s"></div></div></div>
+                        <div class="teammate"><img class="tm-icon" id="vS1i"><b id="vS1n" style="font-size:13px; color:#d3bc8e"></b><div class="tm-gear-row"><div class="tm-slot" id="vS1w"></div><div class="tm-slot" id="vS1s"></div></div></div>
+                        <div class="teammate"><img class="tm-icon" id="vS2i"><b id="vS2n" style="font-size:13px; color:#d3bc8e"></b><div class="tm-gear-row"><div class="tm-slot" id="vS2w"></div><div class="tm-slot" id="vS2s"></div></div></div>
+                        <div class="teammate"><img class="tm-icon" id="vS3i"><b id="vS3n" style="font-size:13px; color:#d3bc8e"></b><div class="tm-gear-row"><div class="tm-slot" id="vS3w"></div><div class="tm-slot" id="vS3s"></div></div></div>
                     </div>
                 </div>
 
@@ -210,7 +250,12 @@
 
         function openModal(id) {
             curId = id; const c = db.find(x => x.id === id);
-            document.getElementById('mName').innerText = c.name;
+            
+            // Заполнение профиля в модалке
+            document.getElementById('vBigName').innerText = c.name;
+            document.getElementById('vBigLvl').innerText = c.lvl;
+            document.getElementById('vBigIcon').src = c.img || '';
+
             document.getElementById('editPanel').style.display = 'none';
             document.getElementById('wrapA2').style.display = 'none';
             document.getElementById('btnPlusSet').innerText = '+';
@@ -218,8 +263,6 @@
             setSlot('vW', c.w, 'Оружие'); document.getElementById('vWt').innerText = c.wt || '';
             setSlot('vA1', c.a1, 'Сет 1'); document.getElementById('vA1t').innerText = c.a1t || '';
             setSlot('vA2', c.a2, 'Сет 2'); document.getElementById('vA2t').innerText = c.a2t || '';
-            
-            // Если второй сет заполнен, показываем его сразу
             if(c.a2 || c.a2t) toggleSet2();
 
             setSlot('vB', c.b, 'Босс'); setSlot('vBk', c.bk, 'Книги');
@@ -269,23 +312,26 @@
         function renderTodos() {
             const c = db.find(x => x.id === curId); const v = document.getElementById('vTodos'); v.innerHTML = '';
             (c.todos || []).forEach((t, i) => {
-                v.innerHTML += `<div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
-                    <input type="checkbox" ${t.done?'checked':''} onchange="db.find(x=>x.id===${curId}).todos[${i}].done=!db.find(x=>x.id===${curId}).todos[${i}].done; saveDB(); renderTodos();">
-                    <span style="${t.done?'text-decoration:line-through;opacity:0.4':''}">${t.text}</span>
-                    <button onclick="db.find(x=>x.id===${curId}).todos.splice(${i},1); saveDB(); renderTodos();" style="margin-left:auto; color:red; cursor:pointer; background:none; border:none; font-size:24px">×</button>
+                v.innerHTML += `
+                <div class="todo-item">
+                    <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="db.find(x=>x.id===${curId}).todos[${i}].done=!db.find(x=>x.id===${curId}).todos[${i}].done; saveDB(); renderTodos();">
+                    <span class="todo-text" style="${t.done?'text-decoration:line-through;opacity:0.4':''}">${t.text}</span>
+                    <button class="todo-del" onclick="db.find(x=>x.id===${curId}).todos.splice(${i},1); saveDB(); renderTodos();">×</button>
                 </div>`;
             });
         }
+        
         function addTodo() {
             const i = document.getElementById('newTodo'); if(!i.value) return;
             db.find(x => x.id === curId).todos.push({text: i.value, done: false});
             i.value = ''; renderTodos(); saveDB();
         }
+        
         function toggleCalc() { document.getElementById('calc').classList.toggle('active'); }
         function calcIn(v) { let d = document.getElementById('calcDisplay'); d.value = d.value === '0' ? v : d.value + v; }
         function calcClear() { document.getElementById('calcDisplay').value = '0'; }
         function calcEval() { try { document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value); } catch { document.getElementById('calcDisplay').value = 'Error'; } }
-        function deleteChar() { if(confirm('Удалить навсегда?')) { db = db.filter(x => x.id !== curId); closeModal(); renderGrid(); } }
+        function deleteChar() { if(confirm('Удалить?')) { db = db.filter(x => x.id !== curId); closeModal(); renderGrid(); } }
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
         function saveDB() { localStorage.setItem('genshin_ultra_db', JSON.stringify(db)); }
         renderGrid();

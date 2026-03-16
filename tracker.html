@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Genshin Ultimate Archive 3.0</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #16161c; color: #eee; margin: 0; padding: 20px; }
+        
+        /* Хедер и Калькулятор */
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3f3f50; padding-bottom: 10px; margin-bottom: 20px; }
+        #calc { display: none; position: fixed; right: 20px; top: 70px; width: 220px; background: #23232d; border: 1px solid #d3bc8e; border-radius: 10px; padding: 15px; z-index: 3000; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        #calc.active { display: block; }
+        #calc input { width: 100%; background: #16161c; border: 1px solid #444; color: #d3bc8e; padding: 10px; margin-bottom: 10px; border-radius: 5px; text-align: right; font-family: monospace; box-sizing: border-box; }
+        .calc-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .calc-btns button { padding: 10px; background: #3f3f50; border: none; color: white; border-radius: 4px; cursor: pointer; }
+        .calc-btns button:hover { background: #d3bc8e; color: #16161c; }
+
+        /* Канбан Секции */
+        .section { margin-bottom: 30px; padding: 15px; border-radius: 15px; background: rgba(255,255,255,0.02); min-height: 200px; }
+        .section.drag-over { background: rgba(211, 188, 142, 0.1); outline: 2px dashed #d3bc8e; }
+        .section-header { color: #d3bc8e; margin-bottom: 15px; font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .char-grid { display: flex; gap: 15px; flex-wrap: wrap; }
+
+        /* Карточки */
+        .char-card { width: 120px; height: 160px; border-radius: 12px; cursor: grab; transition: 0.2s; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative; overflow: hidden; }
+        .char-card:active { cursor: grabbing; }
+        .char-card:hover { transform: translateY(-5px); outline: 2px solid white; }
+        .rarity-5 { background: linear-gradient(180deg, #815b35, #ffac54); }
+        .rarity-4 { background: linear-gradient(180deg, #514170, #8a59cc); }
+        
+        .add-btn { width: 120px; height: 160px; border: 2px dashed #3f3f50; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 40px; cursor: pointer; color: #3f3f50; transition: 0.3s; }
+        .add-btn:hover { border-color: #d3bc8e; color: #d3bc8e; background: #22222d; }
+
+        .char-icon { width: 85px; height: 85px; border-radius: 50%; background: #2b2b36; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); pointer-events: none; }
+        .char-name { margin-top: 8px; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px black; pointer-events: none; }
+        .char-lvl { position: absolute; bottom: 8px; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 10px; font-size: 9px; color: #d3bc8e; border: 1px solid #d3bc8e; }
+
+        /* Модалка */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: #23232d; width: 1000px; padding: 25px; border-radius: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-height: 90vh; overflow-y: auto; border: 1px solid #3f3f50; }
+        
+        .slot-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .slot { width: 65px; height: 65px; background: #16161c; border-radius: 8px; border: 1px solid #3f3f50; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #666; overflow: hidden; position: relative; }
+        .slot img { width: 100%; height: 100%; object-fit: cover; }
+        .slot-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.7); width: 100%; text-align: center; color: #eee; font-size: 7px; padding: 2px 0; }
+
+        /* Раскрывушки */
+        details { grid-column: span 2; background: #1a1a24; padding: 10px; border-radius: 8px; border: 1px solid #333; }
+        summary { cursor: pointer; color: #d3bc8e; font-weight: bold; font-size: 13px; outline: none; }
+        .detail-text { padding: 10px; white-space: pre-wrap; color: #ccc; font-size: 14px; line-height: 1.5; }
+
+        /* Отряд */
+        .team-box { grid-column: span 2; background: #1a1a24; padding: 15px; border-radius: 12px; display: flex; justify-content: space-around; border: 1px solid #333; }
+        .teammate { display: flex; flex-direction: column; align-items: center; width: 200px; text-align: center; }
+        .tm-icon { width: 60px; height: 60px; border-radius: 50%; background: #333; margin-bottom: 8px; object-fit: cover; border: 1px solid #444; }
+        .tm-gear-row { display: flex; gap: 5px; }
+        .tm-slot { width: 35px; height: 35px; background: #222; border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+        .tm-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Редактор */
+        .edit-panel { display: none; grid-column: span 2; background: #2a2a35; padding: 20px; border-radius: 10px; border: 1px solid #d3bc8e; }
+        .edit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .edit-col { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 10px; color: #d3bc8e; font-weight: bold; text-transform: uppercase; }
+        input, textarea, select { background: #16161c; border: 1px solid #444; color: white; padding: 6px; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box; }
+        
+        .btn-toggle-calc { background: #1a1a24; color: #d3bc8e; border: 1px solid #d3bc8e; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-toggle-calc:hover { background: #d3bc8e; color: #1a1a24; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2 style="color: #d3bc8e; margin: 0; letter-spacing: 2px;">GENSHIN MASTER ARCHIVE</h2>
+        <button class="btn-toggle-calc" onclick="toggleCalc()">[ 123 ] 🧮</button>
+    </header>
+
+    <div id="calc">
+        <input type="text" id="calcDisplay" readonly value="0">
+        <div class="calc-btns">
+            <button onclick="calcClear()">C</button>
+            <button onclick="calcIn('/')">/</button><button onclick="calcIn('*')">*</button><button onclick="calcIn('-')">-</button>
+            <button onclick="calcIn('7')">7</button><button onclick="calcIn('8')">8</button><button onclick="calcIn('9')">9</button>
+            <button onclick="calcIn('+')">+</button><button onclick="calcIn('4')">4</button><button onclick="calcIn('5')">5</button>
+            <button onclick="calcIn('6')">6</button><button onclick="calcEval()" style="grid-row: span 2; background: #d3bc8e; color:#16161c; font-weight:bold">=</button>
+            <button onclick="calcIn('1')">1</button><button onclick="calcIn('2')">2</button><button onclick="calcIn('3')">3</button>
+            <button onclick="calcIn('0')" style="grid-column: span 2;">0</button><button onclick="calcIn('.')">.</button>
+        </div>
+    </div>
+
+    <div class="section" id="priority" ondrop="drop(event, 'priority')" ondragover="allowDrop(event)" ondragenter="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+        <div class="section-header">🔥 ПРИОРИТЕТ & ФАРМ</div>
+        <div class="char-grid" id="grid-priority"></div>
+    </div>
+
+    <div class="section" id="built" ondrop="drop(event, 'built')" ondragover="allowDrop(event)" ondragenter="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+        <div class="section-header">✅ СОБРАНЫ</div>
+        <div class="char-grid" id="grid-built"></div>
+    </div>
+
+    <div class="section" id="other" ondrop="drop(event, 'other')" ondragover="allowDrop(event)" ondragenter="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+        <div class="section-header">💤 В ЗАПАСЕ</div>
+        <div class="char-grid" id="grid-other"></div>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <h2 id="mName" style="color:#d3bc8e; margin:0"></h2>
+                <div>
+                    <button onclick="toggleEdit()" style="padding: 5px 15px; cursor:pointer">⚙️ РЕДАКТИРОВАТЬ</button>
+                    <button onclick="closeModal()" style="background:none; border:none; color:#888; font-size:28px; cursor:pointer; margin-left:15px">×</button>
+                </div>
+            </div>
+
+            <div class="edit-panel" id="editPanel">
+                <div class="edit-grid">
+                    <div class="edit-col">
+                        <label>ОСНОВНОЕ</label>
+                        <input type="text" id="eName" placeholder="Имя">
+                        <input type="text" id="eImg" placeholder="Фото (URL)">
+                        <input type="text" id="eLvl" placeholder="Ур | С">
+                        <select id="eRar"><option value="rarity-5">5★</option><option value="rarity-4">4★</option></select>
+                        <label>РЕСУРСЫ (URL)</label>
+                        <input type="text" id="eW" placeholder="Оружие">
+                        <input type="text" id="eA1" placeholder="Арт сет 1">
+                        <input type="text" id="eA2" placeholder="Арт сет 2">
+                        <input type="text" id="eB" placeholder="Босс">
+                        <input type="text" id="eBk" placeholder="Книги">
+                    </div>
+                    <div class="edit-col">
+                        <label>АРТЕФАКТЫ (СТАТЫ)</label>
+                        <input type="text" id="eAF" placeholder="Перо">
+                        <input type="text" id="eAL" placeholder="Цветок">
+                        <input type="text" id="eAS" placeholder="Часы">
+                        <input type="text" id="eAC" placeholder="Кубок">
+                        <input type="text" id="eAH" placeholder="Шапка">
+                    </div>
+                    <div class="edit-col">
+                        <label>ТЕКСТЫ</label>
+                        <textarea id="eRot" rows="5" placeholder="Ротация..."></textarea>
+                        <textarea id="eNotes" rows="5" placeholder="Заметки..."></textarea>
+                    </div>
+                    <div class="edit-col">
+                        <label>ОТРЯД (Имя | Фото | Пушка | Сет)</label>
+                        <div style="background:#16161c; padding:5px; border-radius:4px">
+                            <input type="text" id="eS1n" placeholder="S1 Имя" style="margin-bottom:2px">
+                            <input type="text" id="eS1i" placeholder="S1 Фото" style="margin-bottom:2px">
+                            <input type="text" id="eS1w" placeholder="S1 Пушка" style="margin-bottom:2px">
+                            <input type="text" id="eS1s" placeholder="S1 Сет">
+                        </div>
+                        <div style="background:#16161c; padding:5px; border-radius:4px; margin-top:5px">
+                            <input type="text" id="eS2n" placeholder="S2 Имя" style="margin-bottom:2px">
+                            <input type="text" id="eS2i" placeholder="S2 Фото" style="margin-bottom:2px">
+                            <input type="text" id="eS2w" placeholder="S2 Пушка" style="margin-bottom:2px">
+                            <input type="text" id="eS2s" placeholder="S2 Сет">
+                        </div>
+                        <div style="background:#16161c; padding:5px; border-radius:4px; margin-top:5px">
+                            <input type="text" id="eS3n" placeholder="S3 Имя" style="margin-bottom:2px">
+                            <input type="text" id="eS3i" placeholder="S3 Фото" style="margin-bottom:2px">
+                            <input type="text" id="eS3w" placeholder="S3 Пушка" style="margin-bottom:2px">
+                            <input type="text" id="eS3s" placeholder="S3 Сет">
+                        </div>
+                    </div>
+                </div>
+                <button onclick="saveData()" style="width:100%; margin-top:15px; background:#d3bc8e; color:#16161c; font-weight:bold; padding:12px; border:none; cursor:pointer; font-size:14px">СОХРАНИТЬ ВСЕ ДАННЫЕ</button>
+                <button onclick="deleteChar()" style="width:100%; margin-top:5px; background:#ff4444; color:white; border:none; padding:8px; cursor:pointer">УДАЛИТЬ ПЕРСОНАЖА</button>
+            </div>
+
+            <div id="viewMain">
+                <div class="section-header" style="font-size:14px">ЭКИПИРОВКА</div>
+                <div class="slot-group">
+                    <div class="slot" id="vW"><div class="slot-label">Оружие</div></div>
+                    <div class="slot" id="vA1"><div class="slot-label">Сет 1</div></div>
+                    <div class="slot" id="vA2"><div class="slot-label">Сет 2</div></div>
+                    <div class="slot" id="vB"><div class="slot-label">Босс</div></div>
+                    <div class="slot" id="vBk"><div class="slot-label">Книги</div></div>
+                </div>
+                
+                <div class="section-header" style="font-size:14px">ЗАДАЧИ</div>
+                <div id="vTodos" style="background:#16161c; padding:10px; border-radius:8px; min-height:100px"></div>
+                <input type="text" id="newTodo" placeholder="+ Добавить задачу..." onkeydown="if(event.key==='Enter') addTodo()" style="margin-top:10px">
+            </div>
+
+            <div id="viewDetails" style="display:flex; flex-direction:column; gap:8px">
+                <details open><summary>АРТЕФАКТЫ (СТАТЫ)</summary>
+                    <div class="detail-text" id="vArts"></div>
+                </details>
+                <details><summary>РОТАЦИЯ</summary>
+                    <div class="detail-text" id="vRot"></div>
+                </details>
+                <details><summary>ЗАМЕТКИ</summary>
+                    <div class="detail-text" id="vNotes"></div>
+                </details>
+            </div>
+
+            <div class="team-box">
+                <div class="teammate">
+                    <img class="tm-icon" id="vS1i">
+                    <b id="vS1n" style="font-size:12px; color:#d3bc8e"></b>
+                    <div class="tm-gear-row">
+                        <div class="tm-slot" id="vS1w"></div>
+                        <div class="tm-slot" id="vS1s"></div>
+                    </div>
+                </div>
+                <div class="teammate">
+                    <img class="tm-icon" id="vS2i">
+                    <b id="vS2n" style="font-size:12px; color:#d3bc8e"></b>
+                    <div class="tm-gear-row">
+                        <div class="tm-slot" id="vS2w"></div>
+                        <div class="tm-slot" id="vS2s"></div>
+                    </div>
+                </div>
+                <div class="teammate">
+                    <img class="tm-icon" id="vS3i">
+                    <b id="vS3n" style="font-size:12px; color:#d3bc8e"></b>
+                    <div class="tm-gear-row">
+                        <div class="tm-slot" id="vS3w"></div>
+                        <div class="tm-slot" id="vS3s"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('genshin_ultra_db')) || [];
+        let curId = null;
+
+        function renderGrid() {
+            const types = ['priority', 'built', 'other'];
+            types.forEach(type => {
+                const grid = document.getElementById(`grid-${type}`);
+                grid.innerHTML = `<div class="add-btn" onclick="addNew('${type}')">+</div>`;
+                db.filter(c => (c.status || 'other') === type).forEach(c => {
+                    grid.innerHTML += `
+                        <div class="char-card ${c.rarity}" draggable="true" ondragstart="drag(event, ${c.id})" onclick="openModal(${c.id})">
+                            <img src="${c.img || ''}" class="char-icon" onerror="this.style.opacity='0'">
+                            <div class="char-name">${c.name}</div>
+                            <div class="char-lvl">${c.lvl}</div>
+                        </div>`;
+                });
+            });
+            localStorage.setItem('genshin_ultra_db', JSON.stringify(db));
+        }
+
+        // Drag and Drop
+        function drag(ev, id) { ev.dataTransfer.setData("charId", id); }
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drop(ev, newStatus) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("charId");
+            const char = db.find(x => x.id == id);
+            if(char) {
+                char.status = newStatus;
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('drag-over'));
+                renderGrid();
+            }
+        }
+
+        function addNew(status) {
+            const n = { id: Date.now(), name: 'Новый герой', rarity: 'rarity-5', lvl: '1 | C0', status: status, todos: [] };
+            db.push(n); renderGrid(); openModal(n.id); toggleEdit();
+        }
+
+        function openModal(id) {
+            curId = id; const c = db.find(x => x.id === id);
+            document.getElementById('mName').innerText = c.name;
+            document.getElementById('editPanel').style.display = 'none';
+            
+            // Основные слоты
+            setSlot('vW', c.w, 'Оружие'); setSlot('vA1', c.a1, 'Сет 1'); setSlot('vA2', c.a2, 'Сет 2');
+            setSlot('vB', c.b, 'Босс'); setSlot('vBk', c.bk, 'Книги');
+            
+            document.getElementById('vArts').innerText = `ПЕРО: ${c.af||'—'}\nЦВЕТОК: ${c.al||'—'}\nЧАСЫ: ${c.as||'—'}\nКУБОК: ${c.ac||'—'}\nШАПКА: ${c.ah||'—'}`;
+            document.getElementById('vRot').innerText = c.rot || 'Ротация не заполнена';
+            document.getElementById('vNotes').innerText = c.notes || 'Заметок нет';
+
+            // Саппорты
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`vS${i}n`).innerText = c[`s${i}n`] || `S${i}`;
+                document.getElementById(`vS${i}i`).src = c[`s${i}i`] || '';
+                setSlot(`vS${i}w`, c[`s${i}w`], ''); setSlot(`vS${i}s`, c[`s${i}s`], '');
+            }
+
+            renderTodos();
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function setSlot(id, src, label) {
+            const el = document.getElementById(id);
+            if(src) el.innerHTML = `<img src="${src}">`;
+            else el.innerHTML = label ? `<div class="slot-label">${label}</div>` : '';
+        }
+
+        function toggleEdit() {
+            const p = document.getElementById('editPanel'); const c = db.find(x => x.id === curId);
+            p.style.display = p.style.display === 'none' ? 'block' : 'none';
+            if(p.style.display === 'block') {
+                const fields = ['Name','Img','Lvl','Rar','W','A1','A2','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S1w','S1s','S2n','S2i','S2w','S2s','S3n','S3i','S3w','S3s'];
+                fields.forEach(f => document.getElementById('e'+f).value = c[f.toLowerCase()] || '');
+            }
+        }
+
+        function saveData() {
+            const c = db.find(x => x.id === curId);
+            const fields = ['Name','Img','Lvl','Rar','W','A1','A2','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S1w','S1s','S2n','S2i','S2w','S2s','S3n','S3i','S3w','S3s'];
+            fields.forEach(f => c[f.toLowerCase()] = document.getElementById('e'+f).value);
+            renderGrid(); openModal(curId);
+        }
+
+        function renderTodos() {
+            const c = db.find(x => x.id === curId); const v = document.getElementById('vTodos'); v.innerHTML = '';
+            (c.todos || []).forEach((t, i) => {
+                v.innerHTML += `<div style="display:flex; align-items:center; gap:10px; font-size:13px; margin-bottom:5px">
+                    <input type="checkbox" ${t.done?'checked':''} onchange="db.find(x=>x.id===${curId}).todos[${i}].done=!db.find(x=>x.id===${curId}).todos[${i}].done; saveDB(); renderTodos();">
+                    <span style="${t.done?'text-decoration:line-through;opacity:0.4':''}">${t.text}</span>
+                    <button onclick="db.find(x=>x.id===${curId}).todos.splice(${i},1); saveDB(); renderTodos();" style="margin-left:auto; background:none; border:none; color:red; cursor:pointer">×</button>
+                </div>`;
+            });
+        }
+        function addTodo() {
+            const i = document.getElementById('newTodo'); if(!i.value) return;
+            db.find(x => x.id === curId).todos.push({text: i.value, done: false});
+            i.value = ''; renderTodos(); saveDB();
+        }
+
+        function toggleCalc() { document.getElementById('calc').classList.toggle('active'); }
+        function calcIn(v) { let d = document.getElementById('calcDisplay'); d.value = d.value === '0' ? v : d.value + v; }
+        function calcClear() { document.getElementById('calcDisplay').value = '0'; }
+        function calcEval() { try { document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value); } catch { document.getElementById('calcDisplay').value = 'Error'; } }
+
+        function deleteChar() { if(confirm('Удалить персонажа навсегда?')) { db = db.filter(x => x.id !== curId); closeModal(); renderGrid(); } }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function saveDB() { localStorage.setItem('genshin_ultra_db', JSON.stringify(db)); }
+        window.onclick = (e) => { if(e.target.id === 'modal') closeModal(); }
+        renderGrid();
+    </script>
+</body>
+</html>

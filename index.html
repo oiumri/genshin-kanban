@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genshin Master Archive 3.8</title>
+    <title>Genshin Master Archive 3.9.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,16 +22,64 @@
             line-height: 1.4;
         }
         
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 30px; }
-        
-        /* Калькулятор */
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid var(--border); 
+            padding-bottom: 15px; 
+            margin-bottom: 30px; 
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .external-link, .mail-text {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: 0.3s;
+        }
+
+        .external-link {
+            border-bottom: 1px solid transparent;
+        }
+        .external-link:hover {
+            border-bottom: 1px solid var(--gold);
+            opacity: 0.8;
+        }
+
+        .mail-text {
+            cursor: default;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-header {
+            background: none; 
+            border: 1px solid var(--gold); 
+            color: var(--gold); 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-header:hover {
+            background: rgba(211, 188, 142, 0.1);
+        }
+
         #calc { display: none; position: fixed; right: 30px; top: 90px; width: 280px; background: #23232d; border: 1px solid var(--gold); border-radius: 12px; padding: 20px; z-index: 3000; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
         #calc.active { display: block; }
         #calc input { width: 100%; background: var(--bg-dark); border: 1px solid #444; color: var(--gold); padding: 12px; margin-bottom: 15px; border-radius: 8px; text-align: right; font-size: 22px; box-sizing: border-box; }
         .calc-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .calc-btns button { padding: 15px; background: var(--border); border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 18px; }
 
-        /* Канбан */
         .section { margin-bottom: 40px; padding: 25px; border-radius: 20px; background: rgba(255,255,255,0.02); min-height: 250px; }
         .section-header { color: var(--gold); margin-bottom: 20px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
         .char-grid { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -46,7 +94,6 @@
         .add-btn { width: 140px; height: 180px; border: 2px dashed var(--border); border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 40px; cursor: pointer; color: var(--border); transition: 0.3s; }
         .add-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-        /* Модалка */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background: var(--bg-card); width: 1200px; padding: 35px; border-radius: 24px; border: 1px solid var(--border); max-height: 95vh; overflow-y: auto; }
         
@@ -55,14 +102,12 @@
         .char-big-icon { width: 160px; height: 160px; border-radius: 50%; background: #2b2b36; border: 4px solid var(--gold); object-fit: cover; margin-bottom: 12px; }
         .char-big-name { font-size: 24px; font-weight: 600; color: var(--gold); text-align: center; }
 
-        /* Экипировка */
         .equipment-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
         .slot { width: 90px; height: 90px; background: var(--bg-dark); border-radius: 12px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .slot img { width: 100%; height: 100%; object-fit: cover; }
         .slot-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); width: 100%; text-align: center; color: var(--gold); font-size: 10px; padding: 3px 0; }
         .slot-text { font-size: 16px; font-weight: 600; color: #ccc; max-width: 140px; }
 
-        /* План прокачки (Чекбоксы) */
         #vTodos { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
         
@@ -76,20 +121,16 @@
         .todo-text { flex-grow: 1; font-size: 15px; font-weight: 300; }
         .todo-text.done { text-decoration: line-through; opacity: 0.4; }
         .todo-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 20px; opacity: 0.5; }
-        .todo-del:hover { opacity: 1; }
 
-        /* Лейаут */
         .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         .team-box { background: var(--bg-dark); padding: 20px; border-radius: 20px; display: flex; justify-content: space-around; border: 1px solid var(--border); }
         .teammate { display: flex; flex-direction: column; align-items: center; width: 30%; }
         .tm-icon { width: 70px; height: 70px; border-radius: 50%; background: #333; margin-bottom: 10px; border: 2px solid #444; object-fit: cover; }
-        .tm-slot { width: 45px; height: 45px; background: #222; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
 
         details { background: #1a1a24; padding: 12px 18px; border-radius: 15px; border: 1px solid #333; margin-bottom: 10px; }
         summary { cursor: pointer; color: var(--gold); font-weight: 600; font-size: 16px; }
         .detail-text { padding: 10px 0; white-space: pre-wrap; color: #bbb; font-size: 15px; border-top: 1px solid #333; margin-top: 8px; }
 
-        /* Редактор */
         .edit-panel { display: none; background: #2a2a35; padding: 25px; border-radius: 20px; border: 2px solid var(--gold); margin-bottom: 30px; }
         .edit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         input, textarea, select { background: var(--bg-dark); border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; width: 100%; box-sizing: border-box; margin-bottom: 8px; }
@@ -101,9 +142,18 @@
 <body>
 
     <header>
-        <h2 style="color: var(--gold); margin: 0; letter-spacing: 4px; font-weight: 300;">ARCHIVE <span style="font-weight: 600;">3.8</span></h2>
-        <button onclick="toggleCalc()" style="background:none; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; border-radius: 8px; cursor: pointer;">КАЛЬКУЛЯТОР</button>
+        <h2 style="color: var(--gold); margin: 0; letter-spacing: 4px; font-weight: 300;">ARCHIVE <span style="font-weight: 600;">3.9.3</span></h2>
+        
+        <div class="header-controls">
+            <a href="https://game8.co/games/Genshin-Impact" target="_blank" class="external-link">🌐 Game8 (Билды)</a>
+            <span class="mail-text">✉️ toraivori@gmail.com</span>
+            <button class="btn-header" onclick="toggleCalc()">КАЛЬКУЛЯТОР</button>
+        </div>
     </header>
+
+    <div class="section" id="priority" ondrop="drop(event, 'priority')" ondragover="allowDrop(event)"><div class="section-header">🔥 Приоритет</div><div class="char-grid" id="grid-priority"></div></div>
+    <div class="section" id="built" ondrop="drop(event, 'built')" ondragover="allowDrop(event)"><div class="section-header">✅ Собраны</div><div class="char-grid" id="grid-built"></div></div>
+    <div class="section" id="other" ondrop="drop(event, 'other')" ondragover="allowDrop(event)"><div class="section-header">💤 В запасе</div><div class="char-grid" id="grid-other"></div></div>
 
     <div id="calc">
         <input type="text" id="calcDisplay" readonly value="0">
@@ -117,14 +167,11 @@
         </div>
     </div>
 
-    <div class="section" id="priority" ondrop="drop(event, 'priority')" ondragover="allowDrop(event)"><div class="section-header">🔥 Приоритет</div><div class="char-grid" id="grid-priority"></div></div>
-    <div class="section" id="built" ondrop="drop(event, 'built')" ondragover="allowDrop(event)"><div class="section-header">✅ Собраны</div><div class="char-grid" id="grid-built"></div></div>
-    <div class="section" id="other" ondrop="drop(event, 'other')" ondragover="allowDrop(event)"><div class="section-header">💤 В запасе</div><div class="char-grid" id="grid-other"></div></div>
-
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <div class="modal-header" style="display:flex; justify-content: flex-end; gap:10px; margin-bottom:20px">
-                <button onclick="toggleEdit()" style="background:var(--border); border:none; color:white; padding:8px 20px; border-radius:8px; cursor:pointer">РЕДАКТИРОВАТЬ</button>
+                <button onclick="toggleEdit()" style="background:var(--border); border:none; color:white; padding:8px 20px; border-radius:8px; cursor:pointer; font-family: Montserrat">РЕДАКТИРОВАТЬ</button>
+                <button onclick="deleteChar()" style="background:none; border:none; color:#ff4444; font-size:12px; cursor:pointer; font-family: Montserrat">УДАЛИТЬ</button>
                 <button onclick="closeModal()" style="background:none; border:none; color:#666; font-size:30px; cursor:pointer">×</button>
             </div>
 
@@ -183,7 +230,7 @@
                     <div id="vTodos"></div>
                     <div style="display:flex; gap:10px">
                         <input type="text" id="newTodo" placeholder="Добавить задачу..." style="margin:0" onkeydown="if(event.key==='Enter') addTodo()">
-                        <button onclick="addTodo()" style="background:var(--gold); border:none; padding:0 15px; border-radius:8px; cursor:pointer; font-weight:bold">+</button>
+                        <button onclick="addTodo()" style="background:var(--gold); border:none; padding:0 15px; border-radius:8px; cursor:pointer; font-weight:bold; color:#16161c">+</button>
                     </div>
                     
                     <div class="section-header" style="font-size:14px; margin-top:30px">🛡️ ОТРЯД</div>
@@ -288,7 +335,7 @@
                 v.innerHTML += `<div class="todo-item">
                     <div class="todo-check-custom ${t.done?'done':''}" onclick="toggleTodo(${i})"></div>
                     <span class="todo-text ${t.done?'done':''}">${t.text}</span>
-                    <button class="todo-del" onclick="deleteTodo(${i})">×</button>
+                    <button class="todo-del" onclick="deleteTodo(${i})" style="background:none; border:none; color:red; cursor:pointer">×</button>
                 </div>`;
             });
         }
@@ -314,6 +361,14 @@
         function calcIn(v) { let d = document.getElementById('calcDisplay'); d.value = d.value === '0' ? v : d.value + v; }
         function calcClear() { document.getElementById('calcDisplay').value = '0'; }
         function calcEval() { try { document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value); } catch { document.getElementById('calcDisplay').value = 'Error'; } }
+        
+        function deleteChar() {
+            if(confirm('Удалить персонажа?')) {
+                db = db.filter(x => x.id !== curId);
+                saveDB(); closeModal(); renderGrid();
+            }
+        }
+        
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
         function saveDB() { localStorage.setItem('genshin_ultra_db', JSON.stringify(db)); }
         renderGrid();

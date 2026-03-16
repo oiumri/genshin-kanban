@@ -2,217 +2,200 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genshin Ultimate Archive 3.5 - Profile Update</title>
+    <title>Genshin Master Archive 3.8</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #16161c; color: #eee; margin: 0; padding: 30px; font-size: 18px; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3f3f50; padding-bottom: 15px; margin-bottom: 30px; }
-        
-        #calc { display: none; position: fixed; right: 30px; top: 90px; width: 280px; background: #23232d; border: 1px solid #d3bc8e; border-radius: 12px; padding: 20px; z-index: 3000; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
-        #calc.active { display: block; }
-        #calc input { width: 100%; background: #16161c; border: 1px solid #444; color: #d3bc8e; padding: 12px; margin-bottom: 15px; border-radius: 8px; text-align: right; font-size: 22px; box-sizing: border-box; }
-        .calc-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .calc-btns button { padding: 15px; background: #3f3f50; border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 18px; }
+        :root {
+            --gold: #d3bc8e;
+            --bg-dark: #16161c;
+            --bg-card: #1e1e26;
+            --border: #3f3f50;
+        }
 
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--bg-dark); 
+            color: #eee; 
+            margin: 0; 
+            padding: 30px; 
+            font-size: 16px; 
+            line-height: 1.4;
+        }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 30px; }
+        
+        /* Калькулятор */
+        #calc { display: none; position: fixed; right: 30px; top: 90px; width: 280px; background: #23232d; border: 1px solid var(--gold); border-radius: 12px; padding: 20px; z-index: 3000; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
+        #calc.active { display: block; }
+        #calc input { width: 100%; background: var(--bg-dark); border: 1px solid #444; color: var(--gold); padding: 12px; margin-bottom: 15px; border-radius: 8px; text-align: right; font-size: 22px; box-sizing: border-box; }
+        .calc-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .calc-btns button { padding: 15px; background: var(--border); border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 18px; }
+
+        /* Канбан */
         .section { margin-bottom: 40px; padding: 25px; border-radius: 20px; background: rgba(255,255,255,0.02); min-height: 250px; }
-        .section-header { color: #d3bc8e; margin-bottom: 20px; font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .section-header { color: var(--gold); margin-bottom: 20px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
         .char-grid { display: flex; gap: 20px; flex-wrap: wrap; }
 
-        .char-card { width: 150px; height: 200px; border-radius: 15px; cursor: grab; transition: 0.2s; display: flex; flex-direction: column; align-items: center; padding-top: 20px; position: relative; overflow: hidden; }
+        .char-card { width: 140px; height: 180px; border-radius: 15px; cursor: grab; transition: 0.2s; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative; overflow: hidden; background: #2b2b36; }
         .rarity-5 { background: linear-gradient(180deg, #815b35, #ffac54); }
         .rarity-4 { background: linear-gradient(180deg, #514170, #8a59cc); }
-        .char-icon { width: 110px; height: 110px; border-radius: 50%; background: #2b2b36; border: 3px solid rgba(255,255,255,0.3); object-fit: cover; }
-        .char-name { margin-top: 10px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 3px black; }
-        .char-lvl { position: absolute; bottom: 10px; background: rgba(0,0,0,0.8); padding: 4px 12px; border-radius: 12px; font-size: 11px; color: #d3bc8e; border: 1px solid #d3bc8e; }
+        .char-icon { width: 100px; height: 100px; border-radius: 50%; background: #1c1c24; border: 3px solid rgba(255,255,255,0.2); object-fit: cover; }
+        .char-name { margin-top: 8px; font-weight: 600; font-size: 13px; text-shadow: 1px 1px 3px black; text-align: center; width: 90%; }
+        .char-lvl { position: absolute; bottom: 8px; background: rgba(0,0,0,0.8); padding: 2px 10px; border-radius: 10px; font-size: 10px; color: var(--gold); border: 1px solid var(--gold); }
 
-        .add-btn { width: 150px; height: 200px; border: 3px dashed #3f3f50; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 50px; cursor: pointer; color: #3f3f50; }
+        .add-btn { width: 140px; height: 180px; border: 2px dashed var(--border); border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 40px; cursor: pointer; color: var(--border); transition: 0.3s; }
+        .add-btn:hover { border-color: var(--gold); color: var(--gold); }
 
         /* Модалка */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: #1e1e26; width: 1200px; padding: 35px; border-radius: 20px; border: 1px solid #3f3f50; max-height: 95vh; overflow-y: auto; }
+        .modal-content { background: var(--bg-card); width: 1200px; padding: 35px; border-radius: 24px; border: 1px solid var(--border); max-height: 95vh; overflow-y: auto; }
         
-        .modal-header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 15px; }
-        
-        /* Компоновка Профиля внутри модалки */
-        .profile-id-card { display: flex; gap: 30px; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 20px; margin-bottom: 30px; border: 1px solid rgba(211, 188, 142, 0.1); }
-        
-        .char-big-profile { display: flex; flex-direction: column; align-items: center; width: 220px; flex-shrink: 0; border-right: 1px solid #3f3f50; padding-right: 20px; }
-        .char-big-icon { width: 160px; height: 160px; border-radius: 50%; background: #2b2b36; border: 4px solid #d3bc8e; object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 20px rgba(211, 188, 142, 0.2); }
-        .char-big-name { font-size: 24px; font-weight: bold; color: #d3bc8e; text-align: center; margin-bottom: 5px; }
-        .char-big-lvl { font-size: 16px; color: #888; letter-spacing: 1px; }
+        .profile-id-card { display: flex; gap: 40px; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 24px; margin-bottom: 30px; border: 1px solid rgba(211, 188, 142, 0.1); align-items: center; }
+        .char-big-profile { display: flex; flex-direction: column; align-items: center; width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); padding-right: 30px; }
+        .char-big-icon { width: 160px; height: 160px; border-radius: 50%; background: #2b2b36; border: 4px solid var(--gold); object-fit: cover; margin-bottom: 12px; }
+        .char-big-name { font-size: 24px; font-weight: 600; color: var(--gold); text-align: center; }
 
-        .equipment-block { flex-grow: 1; }
-        .equipment-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 20px; }
-        .slot-item { display: flex; align-items: center; gap: 12px; }
-        .slot { width: 80px; height: 80px; background: #16161c; border-radius: 12px; border: 1px solid #3f3f50; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        /* Экипировка */
+        .equipment-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+        .slot { width: 90px; height: 90px; background: var(--bg-dark); border-radius: 12px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .slot img { width: 100%; height: 100%; object-fit: cover; }
-        .slot-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.7); width: 100%; text-align: center; color: #eee; font-size: 10px; padding: 2px 0; }
-        .slot-text { font-size: 16px; font-weight: bold; color: #d3bc8e; max-width: 140px; line-height: 1.2; }
+        .slot-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); width: 100%; text-align: center; color: var(--gold); font-size: 10px; padding: 3px 0; }
+        .slot-text { font-size: 16px; font-weight: 600; color: #ccc; max-width: 140px; }
 
-        .res-group { display: flex; gap: 10px; margin-left: auto; }
-        .res-slot { width: 70px; height: 70px; background: #111; border-radius: 10px; border: 1px solid #444; overflow: hidden; position: relative; }
-        .res-slot img { width: 100%; height: 100%; object-fit: cover; }
+        /* План прокачки (Чекбоксы) */
+        #vTodos { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 15px; }
+        .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        
+        .todo-check-custom { 
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gold); 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .todo-check-custom.done { background: var(--gold); }
+        .todo-check-custom.done::after { content: '✓'; color: var(--bg-dark); font-size: 14px; font-weight: bold; }
+        
+        .todo-text { flex-grow: 1; font-size: 15px; font-weight: 300; }
+        .todo-text.done { text-decoration: line-through; opacity: 0.4; }
+        .todo-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 20px; opacity: 0.5; }
+        .todo-del:hover { opacity: 1; }
 
-        .main-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; }
-
-        /* Туду и Отряд */
-        #vTodos { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; min-height: 120px; margin-bottom: 15px; }
-        .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .todo-check { width: 20px; height: 20px; cursor: pointer; }
-        .todo-text { flex-grow: 1; font-size: 16px; }
-        .todo-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 22px; }
-        .add-todo-container { display: flex; gap: 10px; margin-bottom: 25px; }
-        .add-todo-btn { background: #d3bc8e; color: #16161c; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-
-        .team-box { background: #16161c; padding: 20px; border-radius: 15px; display: flex; justify-content: space-around; border: 1px solid #3f3f50; }
+        /* Лейаут */
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .team-box { background: var(--bg-dark); padding: 20px; border-radius: 20px; display: flex; justify-content: space-around; border: 1px solid var(--border); }
         .teammate { display: flex; flex-direction: column; align-items: center; width: 30%; }
-        .tm-icon { width: 75px; height: 75px; border-radius: 50%; background: #333; margin-bottom: 10px; border: 2px solid #444; }
-        .tm-gear-row { display: flex; gap: 6px; }
+        .tm-icon { width: 70px; height: 70px; border-radius: 50%; background: #333; margin-bottom: 10px; border: 2px solid #444; object-fit: cover; }
         .tm-slot { width: 45px; height: 45px; background: #222; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
 
-        /* Раскрывушки справа */
-        details { background: #1a1a24; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 12px; }
-        summary { cursor: pointer; color: #d3bc8e; font-weight: bold; font-size: 18px; }
-        .detail-text { padding: 10px; white-space: pre-wrap; color: #ccc; font-size: 16px; line-height: 1.5; }
+        details { background: #1a1a24; padding: 12px 18px; border-radius: 15px; border: 1px solid #333; margin-bottom: 10px; }
+        summary { cursor: pointer; color: var(--gold); font-weight: 600; font-size: 16px; }
+        .detail-text { padding: 10px 0; white-space: pre-wrap; color: #bbb; font-size: 15px; border-top: 1px solid #333; margin-top: 8px; }
 
         /* Редактор */
-        .edit-panel { display: none; background: #2a2a35; padding: 25px; border-radius: 15px; border: 1px solid #d3bc8e; margin-bottom: 25px; }
-        .edit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        input, textarea, select { background: #16161c; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; }
-        
-        .add-set-btn { background: #3f3f50; color: #d3bc8e; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-weight: bold; }
-        .btn-toggle-calc { background: #1a1a24; color: #d3bc8e; border: 1px solid #d3bc8e; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .edit-panel { display: none; background: #2a2a35; padding: 25px; border-radius: 20px; border: 2px solid var(--gold); margin-bottom: 30px; }
+        .edit-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        input, textarea, select { background: var(--bg-dark); border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; width: 100%; box-sizing: border-box; margin-bottom: 8px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--gold); font-size: 11px; text-transform: uppercase; }
+
+        .btn-main { background: var(--gold); color: var(--bg-dark); border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2 style="color: #d3bc8e; margin: 0; letter-spacing: 3px;">GENSHIN MASTER ARCHIVE</h2>
-        <button class="btn-toggle-calc" onclick="toggleCalc()">[ 123 ] 🧮</button>
+        <h2 style="color: var(--gold); margin: 0; letter-spacing: 4px; font-weight: 300;">ARCHIVE <span style="font-weight: 600;">3.8</span></h2>
+        <button onclick="toggleCalc()" style="background:none; border: 1px solid var(--gold); color: var(--gold); padding: 8px 15px; border-radius: 8px; cursor: pointer;">КАЛЬКУЛЯТОР</button>
     </header>
 
     <div id="calc">
         <input type="text" id="calcDisplay" readonly value="0">
         <div class="calc-btns">
-            <button onclick="calcClear()">C</button>
-            <button onclick="calcIn('/')">/</button><button onclick="calcIn('*')">*</button><button onclick="calcIn('-')">-</button>
+            <button onclick="calcClear()">C</button><button onclick="calcIn('/')">/</button><button onclick="calcIn('*')">*</button><button onclick="calcIn('-')">-</button>
             <button onclick="calcIn('7')">7</button><button onclick="calcIn('8')">8</button><button onclick="calcIn('9')">9</button>
             <button onclick="calcIn('+')">+</button><button onclick="calcIn('4')">4</button><button onclick="calcIn('5')">5</button>
-            <button onclick="calcIn('6')">6</button><button onclick="calcEval()" style="grid-row: span 2; background: #d3bc8e; color:#16161c; font-weight:bold">=</button>
+            <button onclick="calcIn('6')">6</button><button onclick="calcEval()" style="grid-row: span 2; background: var(--gold); color:#16161c; font-weight:bold">=</button>
             <button onclick="calcIn('1')">1</button><button onclick="calcIn('2')">2</button><button onclick="calcIn('3')">3</button>
             <button onclick="calcIn('0')" style="grid-column: span 2;">0</button><button onclick="calcIn('.')">.</button>
         </div>
     </div>
 
-    <div class="section" id="priority" ondrop="drop(event, 'priority')" ondragover="allowDrop(event)">
-        <div class="section-header">🔥 ПРИОРИТЕТ & ФАРМ</div>
-        <div class="char-grid" id="grid-priority"></div>
-    </div>
-    <div class="section" id="built" ondrop="drop(event, 'built')" ondragover="allowDrop(event)">
-        <div class="section-header">✅ СОБРАНЫ</div>
-        <div class="char-grid" id="grid-built"></div>
-    </div>
-    <div class="section" id="other" ondrop="drop(event, 'other')" ondragover="allowDrop(event)">
-        <div class="section-header">💤 В ЗАПАСЕ</div>
-        <div class="char-grid" id="grid-other"></div>
-    </div>
+    <div class="section" id="priority" ondrop="drop(event, 'priority')" ondragover="allowDrop(event)"><div class="section-header">🔥 Приоритет</div><div class="char-grid" id="grid-priority"></div></div>
+    <div class="section" id="built" ondrop="drop(event, 'built')" ondragover="allowDrop(event)"><div class="section-header">✅ Собраны</div><div class="char-grid" id="grid-built"></div></div>
+    <div class="section" id="other" ondrop="drop(event, 'other')" ondragover="allowDrop(event)"><div class="section-header">💤 В запасе</div><div class="char-grid" id="grid-other"></div></div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <button onclick="toggleEdit()" style="padding: 8px 20px; cursor:pointer; background:#3f3f50; border:none; color:#d3bc8e; border-radius:8px; font-weight:bold">⚙️ РЕДАКТИРОВАТЬ</button>
-                <button onclick="closeModal()" style="background:none; border:none; color:#888; font-size:40px; cursor:pointer">×</button>
+            <div class="modal-header" style="display:flex; justify-content: flex-end; gap:10px; margin-bottom:20px">
+                <button onclick="toggleEdit()" style="background:var(--border); border:none; color:white; padding:8px 20px; border-radius:8px; cursor:pointer">РЕДАКТИРОВАТЬ</button>
+                <button onclick="closeModal()" style="background:none; border:none; color:#666; font-size:30px; cursor:pointer">×</button>
             </div>
 
             <div class="edit-panel" id="editPanel">
                 <div class="edit-grid">
                     <div class="edit-col">
-                        <label>ОСНОВНОЕ</label>
-                        <input type="text" id="eName" placeholder="Имя"><input type="text" id="eImg" placeholder="Фото URL"><input type="text" id="eLvl" placeholder="Ур | C">
-                        <select id="eRar"><option value="rarity-5">5★</option><option value="rarity-4">4★</option></select>
-                        <label>СНАРЯЖЕНИЕ</label>
-                        <input type="text" id="eW" placeholder="Оружие URL"><input type="text" id="eWt" placeholder="Название оружия">
-                        <input type="text" id="eA1" placeholder="Сет 1 URL"><input type="text" id="eA1t" placeholder="Название сета 1">
-                        <input type="text" id="eA2" placeholder="Сет 2 URL"><input type="text" id="eA2t" placeholder="Название сета 2">
+                        <label>Персонаж</label>
+                        <input type="text" id="eName" placeholder="Имя"><input type="text" id="eImg" placeholder="Фото URL"><input type="text" id="eLvl" placeholder="Lvl / C">
+                        <select id="eRar"><option value="rarity-5">5 Звезд</option><option value="rarity-4">4 Звезды</option></select>
+                        <label>Фарм</label>
+                        <input type="text" id="eFarm" placeholder="Дни фарма (напр. Пн/Чт)">
                         <input type="text" id="eB" placeholder="Босс URL"><input type="text" id="eBk" placeholder="Книги URL">
                     </div>
                     <div class="edit-col">
-                        <label>АРТЕФАКТЫ (СТАТЫ)</label>
-                        <input type="text" id="eAF" placeholder="Перо"><input type="text" id="eAL" placeholder="Цветок">
-                        <input type="text" id="eAS" placeholder="Часы"><input type="text" id="eAC" placeholder="Кубок">
-                        <input type="text" id="eAH" placeholder="Шапка">
+                        <label>Снаряжение</label>
+                        <input type="text" id="eW" placeholder="Оружие URL"><input type="text" id="eWt" placeholder="Название">
+                        <input type="text" id="eA1" placeholder="Сет 1 URL"><input type="text" id="eA1t" placeholder="Название">
+                        <input type="text" id="eA2" placeholder="Сет 2 URL"><input type="text" id="eA2t" placeholder="Название">
+                        <label>Арты</label>
+                        <input type="text" id="eAF" placeholder="Перо"><input type="text" id="eAL" placeholder="Цветок"><input type="text" id="eAS" placeholder="Часы"><input type="text" id="eAC" placeholder="Кубок"><input type="text" id="eAH" placeholder="Шапка">
                     </div>
                     <div class="edit-col">
-                        <label>ТЕКСТЫ</label>
-                        <textarea id="eRot" rows="7" placeholder="Ротация..."></textarea><textarea id="eNotes" rows="7" placeholder="Заметки..."></textarea>
+                        <label>Тексты</label>
+                        <textarea id="eRot" rows="5" placeholder="Ротация..."></textarea>
+                        <textarea id="eNotes" rows="5" placeholder="Заметки..."></textarea>
                     </div>
                     <div class="edit-col">
-                        <label>ОТРЯД</label>
-                        <div style="background:#16161c; padding:8px; border-radius:6px; margin-bottom:10px">
-                            <input type="text" id="eS1n"><input type="text" id="eS1i"><input type="text" id="eS1w"><input type="text" id="eS1s">
-                        </div>
-                        <div style="background:#16161c; padding:8px; border-radius:6px; margin-bottom:10px">
-                            <input type="text" id="eS2n"><input type="text" id="eS2i"><input type="text" id="eS2w"><input type="text" id="eS2s">
-                        </div>
-                        <div style="background:#16161c; padding:8px; border-radius:6px">
-                            <input type="text" id="eS3n"><input type="text" id="eS3i"><input type="text" id="eS3w"><input type="text" id="eS3s">
-                        </div>
+                        <label>Отряд</label>
+                        <input type="text" id="eS1n" placeholder="Сапп 1"><input type="text" id="eS1i" placeholder="Иконка">
+                        <input type="text" id="eS2n" placeholder="Сапп 2"><input type="text" id="eS2i" placeholder="Иконка">
+                        <input type="text" id="eS3n" placeholder="Сапп 3"><input type="text" id="eS3i" placeholder="Иконка">
                     </div>
                 </div>
-                <button onclick="saveData()" style="width:100%; margin-top:20px; background:#d3bc8e; padding:15px; font-weight:bold; border:none; cursor:pointer; border-radius:10px">СОХРАНИТЬ ВСЁ</button>
-                <button onclick="deleteChar()" style="width:100%; margin-top:10px; background:#ff4444; color:white; border:none; padding:10px; cursor:pointer; border-radius:10px">УДАЛИТЬ ПЕРСОНАЖА</button>
+                <button class="btn-main" onclick="saveData()">СОХРАНИТЬ ВСЁ</button>
             </div>
 
             <div class="profile-id-card">
                 <div class="char-big-profile">
-                    <img id="vBigIcon" src="" class="char-big-icon" onerror="this.style.opacity='0'">
+                    <img id="vBigIcon" src="" class="char-big-icon" onerror="this.src='https://placehold.co/180x180/23232d/d3bc8e?text=?'">
                     <div id="vBigName" class="char-big-name"></div>
-                    <div id="vBigLvl" class="char-big-lvl"></div>
+                    <div id="vBigLvl" style="color:#888; font-size:14px; margin-top:5px"></div>
                 </div>
-
-                <div class="equipment-block">
-                    <div class="section-header" style="font-size:14px; margin-bottom:10px">ЭКИПИРОВКА & ФАРМ</div>
+                <div style="flex-grow:1">
                     <div class="equipment-row">
-                        <div class="slot-item">
-                            <div class="slot" id="vW"></div>
-                            <div class="slot-text" id="vWt"></div>
-                        </div>
-                        <div class="slot-item">
-                            <div class="slot" id="vA1"></div>
-                            <div class="slot-text" id="vA1t"></div>
-                        </div>
-                        <button class="add-set-btn" id="btnPlusSet" onclick="toggleSet2()">+</button>
-                        <div class="slot-item" id="wrapA2" style="display:none">
-                            <div class="slot" id="vA2"></div>
-                            <div class="slot-text" id="vA2t"></div>
-                        </div>
-                        <div class="res-group">
-                            <div class="res-slot" id="vB"></div>
-                            <div class="res-slot" id="vBk"></div>
-                        </div>
+                        <div style="display:flex; align-items:center; gap:10px"><div class="slot" id="vW"></div><div class="slot-text" id="vWt"></div></div>
+                        <div style="display:flex; align-items:center; gap:10px"><div class="slot" id="vA1"></div><div class="slot-text" id="vA1t"></div></div>
+                        <div style="display:flex; align-items:center; gap:10px; display:none" id="wrapA2"><div class="slot" id="vA2"></div><div class="slot-text" id="vA2t"></div></div>
+                        <div style="margin-left:auto; display:flex; gap:10px"><div class="slot" style="width:70px; height:70px" id="vB"></div><div class="slot" style="width:70px; height:70px" id="vBk"></div></div>
                     </div>
                 </div>
             </div>
 
             <div class="main-layout">
-                <div id="viewLeft">
-                    <div class="section-header" style="font-size:14px">ЗАДАЧИ</div>
+                <div>
+                    <div class="section-header" style="font-size:14px">🎯 ПЛАН ПРОКАЧКИ</div>
                     <div id="vTodos"></div>
-                    <div class="add-todo-container">
-                        <input type="text" id="newTodo" placeholder="+ Добавить задачу..." onkeydown="if(event.key==='Enter') addTodo()">
-                        <button class="add-todo-btn" onclick="addTodo()">ДОБАВИТЬ</button>
+                    <div style="display:flex; gap:10px">
+                        <input type="text" id="newTodo" placeholder="Добавить задачу..." style="margin:0" onkeydown="if(event.key==='Enter') addTodo()">
+                        <button onclick="addTodo()" style="background:var(--gold); border:none; padding:0 15px; border-radius:8px; cursor:pointer; font-weight:bold">+</button>
                     </div>
                     
-                    <div class="section-header" style="font-size:14px">ОТРЯД</div>
+                    <div class="section-header" style="font-size:14px; margin-top:30px">🛡️ ОТРЯД</div>
                     <div class="team-box">
-                        <div class="teammate"><img class="tm-icon" id="vS1i"><b id="vS1n" style="font-size:13px; color:#d3bc8e"></b><div class="tm-gear-row"><div class="tm-slot" id="vS1w"></div><div class="tm-slot" id="vS1s"></div></div></div>
-                        <div class="teammate"><img class="tm-icon" id="vS2i"><b id="vS2n" style="font-size:13px; color:#d3bc8e"></b><div class="tm-gear-row"><div class="tm-slot" id="vS2w"></div><div class="tm-slot" id="vS2s"></div></div></div>
-                        <div class="teammate"><img class="tm-icon" id="vS3i"><b id="vS3n" style="font-size:13px; color:#d3bc8e"></b><div class="tm-gear-row"><div class="tm-slot" id="vS3w"></div><div class="tm-slot" id="vS3s"></div></div></div>
+                        <div class="teammate"><img class="tm-icon" id="vS1i"><span id="vS1n" style="font-size:12px; color:var(--gold)"></span></div>
+                        <div class="teammate"><img class="tm-icon" id="vS2i"><span id="vS2n" style="font-size:12px; color:var(--gold)"></span></div>
+                        <div class="teammate"><img class="tm-icon" id="vS3i"><span id="vS3n" style="font-size:12px; color:var(--gold)"></span></div>
                     </div>
                 </div>
-
-                <div id="viewRight">
+                <div>
                     <details open><summary>АРТЕФАКТЫ (СТАТЫ)</summary><div class="detail-text" id="vArts"></div></details>
+                    <details open><summary>ДНИ ФАРМА</summary><div class="detail-text" id="vFarm" style="color:var(--gold); font-weight:bold"></div></details>
                     <details><summary>РОТАЦИЯ</summary><div class="detail-text" id="vRot"></div></details>
                     <details><summary>ЗАМЕТКИ</summary><div class="detail-text" id="vNotes"></div></details>
                 </div>
@@ -229,7 +212,10 @@
                 const grid = document.getElementById(`grid-${type}`);
                 grid.innerHTML = `<div class="add-btn" onclick="addNew('${type}')">+</div>`;
                 db.filter(c => (c.status || 'other') === type).forEach(c => {
-                    grid.innerHTML += `<div class="char-card ${c.rarity}" draggable="true" ondragstart="drag(event, ${c.id})" onclick="openModal(${c.id})"><img src="${c.img || ''}" class="char-icon" onerror="this.style.opacity='0'"><div class="char-name">${c.name}</div><div class="char-lvl">${c.lvl}</div></div>`;
+                    grid.innerHTML += `<div class="char-card ${c.rarity}" draggable="true" ondragstart="drag(event, ${c.id})" onclick="openModal(${c.id})">
+                        <img src="${c.img || ''}" class="char-icon" onerror="this.src='https://placehold.co/110x110/23232d/d3bc8e?text=?'">
+                        <div class="char-name">${c.name}</div><div class="char-lvl">${c.lvl}</div>
+                    </div>`;
                 });
             });
             localStorage.setItem('genshin_ultra_db', JSON.stringify(db));
@@ -250,46 +236,33 @@
 
         function openModal(id) {
             curId = id; const c = db.find(x => x.id === id);
-            
-            // Заполнение профиля в модалке
             document.getElementById('vBigName').innerText = c.name;
             document.getElementById('vBigLvl').innerText = c.lvl;
             document.getElementById('vBigIcon').src = c.img || '';
-
+            document.getElementById('vFarm').innerText = c.farm || 'Не указано';
             document.getElementById('editPanel').style.display = 'none';
-            document.getElementById('wrapA2').style.display = 'none';
-            document.getElementById('btnPlusSet').innerText = '+';
             
-            setSlot('vW', c.w, 'Оружие'); document.getElementById('vWt').innerText = c.wt || '';
-            setSlot('vA1', c.a1, 'Сет 1'); document.getElementById('vA1t').innerText = c.a1t || '';
-            setSlot('vA2', c.a2, 'Сет 2'); document.getElementById('vA2t').innerText = c.a2t || '';
-            if(c.a2 || c.a2t) toggleSet2();
+            setSlot('vW', c.w, 'ОРУЖИЕ'); document.getElementById('vWt').innerText = c.wt || '';
+            setSlot('vA1', c.a1, 'СЕТ 1'); document.getElementById('vA1t').innerText = c.a1t || '';
+            setSlot('vA2', c.a2, 'СЕТ 2'); document.getElementById('vA2t').innerText = c.a2t || '';
+            document.getElementById('wrapA2').style.display = (c.a2 || c.a2t) ? 'flex' : 'none';
+            setSlot('vB', c.b, ''); setSlot('vBk', c.bk, '');
 
-            setSlot('vB', c.b, 'Босс'); setSlot('vBk', c.bk, 'Книги');
-
-            document.getElementById('vArts').innerText = `ПЕРО: ${c.af||'—'}\nЦВЕТОК: ${c.al||'—'}\nЧАСЫ: ${c.as||'—'}\nКУБОК: ${c.ac||'—'}\nШАПКА: ${c.ah||'—'}`;
+            document.getElementById('vArts').innerText = `ПЕРО: ${c.af||'—'}  |  ЦВЕТОК: ${c.al||'—'}\nЧАСЫ: ${c.as||'—'}  |  КУБОК: ${c.ac||'—'}\nШАПКА: ${c.ah||'—'}`;
             document.getElementById('vRot').innerText = c.rot || '—';
             document.getElementById('vNotes').innerText = c.notes || '—';
 
             for(let i=1; i<=3; i++) {
-                document.getElementById(`vS${i}n`).innerText = c[`s${i}n`] || `S${i}`;
-                document.getElementById(`vS${i}i`).src = c[`s${i}i`] || '';
-                setSlot(`vS${i}w`, c[`s${i}w`], ''); setSlot(`vS${i}s`, c[`s${i}s`], '');
+                document.getElementById(`vS${i}n`).innerText = c[`s${i}n`] || `—`;
+                document.getElementById(`vS${i}i`).src = c[`s${i}i`] || 'https://placehold.co/90x90/16161c/333?text=?';
             }
             renderTodos();
             document.getElementById('modal').style.display = 'flex';
         }
 
-        function toggleSet2() {
-            const w = document.getElementById('wrapA2');
-            const b = document.getElementById('btnPlusSet');
-            if(w.style.display === 'none') { w.style.display = 'flex'; b.innerText = '-'; }
-            else { w.style.display = 'none'; b.innerText = '+'; }
-        }
-
         function setSlot(id, src, label) {
             const el = document.getElementById(id);
-            if(src) el.innerHTML = `<img src="${src}">`;
+            if(src) el.innerHTML = `<img src="${src}"><div class="slot-label">${label}</div>`;
             else el.innerHTML = label ? `<div class="slot-label">${label}</div>` : '';
         }
 
@@ -297,30 +270,40 @@
             const p = document.getElementById('editPanel'); const c = db.find(x => x.id === curId);
             p.style.display = p.style.display === 'none' ? 'block' : 'none';
             if(p.style.display === 'block') {
-                const fields = ['Name','Img','Lvl','Rar','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S1w','S1s','S2n','S2i','S2w','S2s','S3n','S3i','S3w','S3s'];
+                const fields = ['Name','Img','Lvl','Rar','Farm','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S2n','S2i','S3n','S3i'];
                 fields.forEach(f => document.getElementById('e'+f).value = c[f.toLowerCase()] || '');
             }
         }
 
         function saveData() {
             const c = db.find(x => x.id === curId);
-            const fields = ['Name','Img','Lvl','Rar','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S1w','S1s','S2n','S2i','S2w','S2s','S3n','S3i','S3w','S3s'];
+            const fields = ['Name','Img','Lvl','Rar','Farm','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S2n','S2i','S3n','S3i'];
             fields.forEach(f => c[f.toLowerCase()] = document.getElementById('e'+f).value);
-            renderGrid(); openModal(curId);
+            saveDB(); renderGrid(); openModal(curId);
         }
 
         function renderTodos() {
             const c = db.find(x => x.id === curId); const v = document.getElementById('vTodos'); v.innerHTML = '';
             (c.todos || []).forEach((t, i) => {
-                v.innerHTML += `
-                <div class="todo-item">
-                    <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="db.find(x=>x.id===${curId}).todos[${i}].done=!db.find(x=>x.id===${curId}).todos[${i}].done; saveDB(); renderTodos();">
-                    <span class="todo-text" style="${t.done?'text-decoration:line-through;opacity:0.4':''}">${t.text}</span>
-                    <button class="todo-del" onclick="db.find(x=>x.id===${curId}).todos.splice(${i},1); saveDB(); renderTodos();">×</button>
+                v.innerHTML += `<div class="todo-item">
+                    <div class="todo-check-custom ${t.done?'done':''}" onclick="toggleTodo(${i})"></div>
+                    <span class="todo-text ${t.done?'done':''}">${t.text}</span>
+                    <button class="todo-del" onclick="deleteTodo(${i})">×</button>
                 </div>`;
             });
         }
         
+        function toggleTodo(i) {
+            const c = db.find(x => x.id === curId);
+            c.todos[i].done = !c.todos[i].done;
+            saveDB(); renderTodos();
+        }
+
+        function deleteTodo(i) {
+            db.find(x => x.id === curId).todos.splice(i,1);
+            saveDB(); renderTodos();
+        }
+
         function addTodo() {
             const i = document.getElementById('newTodo'); if(!i.value) return;
             db.find(x => x.id === curId).todos.push({text: i.value, done: false});
@@ -331,7 +314,6 @@
         function calcIn(v) { let d = document.getElementById('calcDisplay'); d.value = d.value === '0' ? v : d.value + v; }
         function calcClear() { document.getElementById('calcDisplay').value = '0'; }
         function calcEval() { try { document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value); } catch { document.getElementById('calcDisplay').value = 'Error'; } }
-        function deleteChar() { if(confirm('Удалить?')) { db = db.filter(x => x.id !== curId); closeModal(); renderGrid(); } }
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
         function saveDB() { localStorage.setItem('genshin_ultra_db', JSON.stringify(db)); }
         renderGrid();

@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genshin Master Archive 3.9.3</title>
+    <title>Genshin Master Archive 4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -45,18 +45,9 @@
             transition: 0.3s;
         }
 
-        .external-link {
-            border-bottom: 1px solid transparent;
-        }
-        .external-link:hover {
-            border-bottom: 1px solid var(--gold);
-            opacity: 0.8;
-        }
-
-        .mail-text {
-            cursor: default;
-            letter-spacing: 0.5px;
-        }
+        .external-link { border-bottom: 1px solid transparent; }
+        .external-link:hover { border-bottom: 1px solid var(--gold); opacity: 0.8; }
+        .mail-text { cursor: default; letter-spacing: 0.5px; }
 
         .btn-header {
             background: none; 
@@ -70,9 +61,8 @@
             font-weight: 600;
             transition: 0.3s;
         }
-        .btn-header:hover {
-            background: rgba(211, 188, 142, 0.1);
-        }
+        .btn-header:hover { background: rgba(211, 188, 142, 0.1); }
+        .btn-header.accent { background: var(--gold); color: var(--bg-dark); }
 
         #calc { display: none; position: fixed; right: 30px; top: 90px; width: 280px; background: #23232d; border: 1px solid var(--gold); border-radius: 12px; padding: 20px; z-index: 3000; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
         #calc.active { display: block; }
@@ -80,16 +70,16 @@
         .calc-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .calc-btns button { padding: 15px; background: var(--border); border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 18px; }
 
-        .section { margin-bottom: 40px; padding: 25px; border-radius: 20px; background: rgba(255,255,255,0.02); min-height: 250px; }
+        .section { margin-bottom: 40px; padding: 25px; border-radius: 20px; background: rgba(255,255,255,0.02); min-height: 250px; position: relative; }
         .section-header { color: var(--gold); margin-bottom: 20px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
         .char-grid { display: flex; gap: 20px; flex-wrap: wrap; }
 
-        .char-card { width: 140px; height: 180px; border-radius: 15px; cursor: grab; transition: 0.2s; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative; overflow: hidden; background: #2b2b36; }
+        .char-card { width: 140px; height: 180px; border-radius: 15px; cursor: grab; transition: 0.2s; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative; overflow: hidden; background: #2b2b36; user-select: none; -webkit-user-select: none; touch-action: pan-y; }
         .rarity-5 { background: linear-gradient(180deg, #815b35, #ffac54); }
         .rarity-4 { background: linear-gradient(180deg, #514170, #8a59cc); }
-        .char-icon { width: 100px; height: 100px; border-radius: 50%; background: #1c1c24; border: 3px solid rgba(255,255,255,0.2); object-fit: cover; }
-        .char-name { margin-top: 8px; font-weight: 600; font-size: 13px; text-shadow: 1px 1px 3px black; text-align: center; width: 90%; }
-        .char-lvl { position: absolute; bottom: 8px; background: rgba(0,0,0,0.8); padding: 2px 10px; border-radius: 10px; font-size: 10px; color: var(--gold); border: 1px solid var(--gold); }
+        .char-icon { width: 100px; height: 100px; border-radius: 50%; background: #1c1c24; border: 3px solid rgba(255,255,255,0.2); object-fit: cover; pointer-events: none; }
+        .char-name { margin-top: 8px; font-weight: 600; font-size: 13px; text-shadow: 1px 1px 3px black; text-align: center; width: 90%; pointer-events: none; }
+        .char-lvl { position: absolute; bottom: 8px; background: rgba(0,0,0,0.8); padding: 2px 10px; border-radius: 10px; font-size: 10px; color: var(--gold); border: 1px solid var(--gold); pointer-events: none; }
 
         .add-btn { width: 140px; height: 180px; border: 2px dashed var(--border); border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 40px; cursor: pointer; color: var(--border); transition: 0.3s; }
         .add-btn:hover { border-color: var(--gold); color: var(--gold); }
@@ -110,14 +100,9 @@
 
         #vTodos { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        
-        .todo-check-custom { 
-            width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gold); 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
-        }
+        .todo-check-custom { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .todo-check-custom.done { background: var(--gold); }
         .todo-check-custom.done::after { content: '✓'; color: var(--bg-dark); font-size: 14px; font-weight: bold; }
-        
         .todo-text { flex-grow: 1; font-size: 15px; font-weight: 300; }
         .todo-text.done { text-decoration: line-through; opacity: 0.4; }
         .todo-del { background: none; border: none; color: #ff4444; cursor: pointer; font-size: 20px; opacity: 0.5; }
@@ -125,7 +110,10 @@
         .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         .team-box { background: var(--bg-dark); padding: 20px; border-radius: 20px; display: flex; justify-content: space-around; border: 1px solid var(--border); }
         .teammate { display: flex; flex-direction: column; align-items: center; width: 30%; }
-        .tm-icon { width: 70px; height: 70px; border-radius: 50%; background: #333; margin-bottom: 10px; border: 2px solid #444; object-fit: cover; }
+        .tm-icon { width: 70px; height: 70px; border-radius: 50%; background: #333; margin-bottom: 6px; border: 2px solid #444; object-fit: cover; }
+        .tm-gear-row { display: flex; gap: 8px; margin-top: 4px; }
+        .tm-slot { width: 30px; height: 30px; background: #222; border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+        .tm-slot img { width: 100%; height: 100%; object-fit: cover; }
 
         details { background: #1a1a24; padding: 12px 18px; border-radius: 15px; border: 1px solid #333; margin-bottom: 10px; }
         summary { cursor: pointer; color: var(--gold); font-weight: 600; font-size: 16px; }
@@ -137,16 +125,23 @@
         label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--gold); font-size: 11px; text-transform: uppercase; }
 
         .btn-main { background: var(--gold); color: var(--bg-dark); border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
+
+        /* Быстрое добавление */
+        .qa-element-group { background: var(--bg-dark); padding: 15px; border-radius: 15px; border: 1px solid var(--border); }
+        .qa-element-title { color: var(--gold); margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .qa-char-label { display: flex; align-items: center; gap: 8px; color: #ccc; font-size: 14px; margin-bottom: 6px; cursor: pointer; }
+        .qa-char-label input { width: 16px; height: 16px; margin: 0; accent-color: var(--gold); cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2 style="color: var(--gold); margin: 0; letter-spacing: 4px; font-weight: 300;">ARCHIVE <span style="font-weight: 600;">3.9.3</span></h2>
+        <h2 style="color: var(--gold); margin: 0; letter-spacing: 4px; font-weight: 300;">ARCHIVE <span style="font-weight: 600;">4.0</span></h2>
         
         <div class="header-controls">
             <a href="https://game8.co/games/Genshin-Impact" target="_blank" class="external-link">🌐 Game8 (Билды)</a>
             <span class="mail-text">✉️ toraivori@gmail.com</span>
+            <button class="btn-header accent" onclick="openQuickAdd()">+ БАЗА ПЕРСОНАЖЕЙ</button>
             <button class="btn-header" onclick="toggleCalc()">КАЛЬКУЛЯТОР</button>
         </div>
     </header>
@@ -164,6 +159,18 @@
             <button onclick="calcIn('6')">6</button><button onclick="calcEval()" style="grid-row: span 2; background: var(--gold); color:#16161c; font-weight:bold">=</button>
             <button onclick="calcIn('1')">1</button><button onclick="calcIn('2')">2</button><button onclick="calcIn('3')">3</button>
             <button onclick="calcIn('0')" style="grid-column: span 2;">0</button><button onclick="calcIn('.')">.</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="quickAddModal">
+        <div class="modal-content" style="width: 900px;">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:20px">
+                <h2 style="color:var(--gold); margin:0">БЫСТРОЕ ДОБАВЛЕНИЕ</h2>
+                <button onclick="closeQuickAdd()" style="background:none; border:none; color:#666; font-size:35px; cursor:pointer">×</button>
+            </div>
+            <div id="qa-container" style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-height: 65vh; overflow-y: auto; padding-right:10px">
+                </div>
+            <button class="btn-main" onclick="applyQuickAdd()" style="margin-top:25px; font-size:16px">ДОБАВИТЬ ВЫБРАННЫХ "В ЗАПАС"</button>
         </div>
     </div>
 
@@ -200,9 +207,18 @@
                     </div>
                     <div class="edit-col">
                         <label>Отряд</label>
-                        <input type="text" id="eS1n" placeholder="Сапп 1"><input type="text" id="eS1i" placeholder="Иконка">
-                        <input type="text" id="eS2n" placeholder="Сапп 2"><input type="text" id="eS2i" placeholder="Иконка">
-                        <input type="text" id="eS3n" placeholder="Сапп 3"><input type="text" id="eS3i" placeholder="Иконка">
+                        <div style="background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; margin-bottom:8px">
+                            <input type="text" id="eS1n" placeholder="Имя 1" style="margin-bottom:4px"><input type="text" id="eS1i" placeholder="Аватарка URL" style="margin-bottom:4px">
+                            <div style="display:flex; gap:4px"><input type="text" id="eS1w" placeholder="Оружие URL" style="margin-bottom:0"><input type="text" id="eS1a" placeholder="Сет URL" style="margin-bottom:0"></div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; margin-bottom:8px">
+                            <input type="text" id="eS2n" placeholder="Имя 2" style="margin-bottom:4px"><input type="text" id="eS2i" placeholder="Аватарка URL" style="margin-bottom:4px">
+                            <div style="display:flex; gap:4px"><input type="text" id="eS2w" placeholder="Оружие URL" style="margin-bottom:0"><input type="text" id="eS2a" placeholder="Сет URL" style="margin-bottom:0"></div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.2); padding:8px; border-radius:8px">
+                            <input type="text" id="eS3n" placeholder="Имя 3" style="margin-bottom:4px"><input type="text" id="eS3i" placeholder="Аватарка URL" style="margin-bottom:4px">
+                            <div style="display:flex; gap:4px"><input type="text" id="eS3w" placeholder="Оружие URL" style="margin-bottom:0"><input type="text" id="eS3a" placeholder="Сет URL" style="margin-bottom:0"></div>
+                        </div>
                     </div>
                 </div>
                 <button class="btn-main" onclick="saveData()">СОХРАНИТЬ ВСЁ</button>
@@ -235,9 +251,21 @@
                     
                     <div class="section-header" style="font-size:14px; margin-top:30px">🛡️ ОТРЯД</div>
                     <div class="team-box">
-                        <div class="teammate"><img class="tm-icon" id="vS1i"><span id="vS1n" style="font-size:12px; color:var(--gold)"></span></div>
-                        <div class="teammate"><img class="tm-icon" id="vS2i"><span id="vS2n" style="font-size:12px; color:var(--gold)"></span></div>
-                        <div class="teammate"><img class="tm-icon" id="vS3i"><span id="vS3n" style="font-size:12px; color:var(--gold)"></span></div>
+                        <div class="teammate">
+                            <img class="tm-icon" id="vS1i" onerror="this.src='https://placehold.co/70x70/16161c/333?text=?'">
+                            <span id="vS1n" style="font-size:12px; color:var(--gold); margin-bottom:2px"></span>
+                            <div class="tm-gear-row"><div class="tm-slot" id="vS1w"></div><div class="tm-slot" id="vS1a"></div></div>
+                        </div>
+                        <div class="teammate">
+                            <img class="tm-icon" id="vS2i" onerror="this.src='https://placehold.co/70x70/16161c/333?text=?'">
+                            <span id="vS2n" style="font-size:12px; color:var(--gold); margin-bottom:2px"></span>
+                            <div class="tm-gear-row"><div class="tm-slot" id="vS2w"></div><div class="tm-slot" id="vS2a"></div></div>
+                        </div>
+                        <div class="teammate">
+                            <img class="tm-icon" id="vS3i" onerror="this.src='https://placehold.co/70x70/16161c/333?text=?'">
+                            <span id="vS3n" style="font-size:12px; color:var(--gold); margin-bottom:2px"></span>
+                            <div class="tm-gear-row"><div class="tm-slot" id="vS3w"></div><div class="tm-slot" id="vS3a"></div></div>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -254,12 +282,91 @@
         let db = JSON.parse(localStorage.getItem('genshin_ultra_db')) || [];
         let curId = null;
 
+        // База героев для быстрого добавления
+        const genshinChars = {
+            "Пиро 🔥": ["Ху Тао", "Ёимия", "Дилюк", "Кли", "Дэхья", "Лини", "Арлекино", "Сян Лин", "Беннет", "Тома", "Янь Фэй", "Синь Янь", "Эмбер", "Шеврёз", "Ка Мин", "Мавуика"],
+            "Гидро 💧": ["Е Лань", "Тарталья", "Аято", "Кокоми", "Мона", "Нилу", "Невиллет", "Фурина", "Сиджвин", "Син Цю", "Барбара", "Кандакия", "Муалани"],
+            "Анемо 🌪️": ["Кадзуха", "Венти", "Сяо", "Джинн", "Странник", "Сянь Юнь", "Сахароза", "Фарузан", "Хэйдзо", "Саю", "Линетт", "Часка"],
+            "Электро ⚡": ["Райдэн", "Яэ Мико", "Кэ Цин", "Сайно", "Клоринда", "Фишль", "Кудзё Сара", "Синобу", "Бэй Доу", "Рэйзор", "Лиза", "Дори", "Сетос", "Оророн"],
+            "Дендро 🌿": ["Нахида", "Аль-Хайтам", "Тигнари", "Бай Чжу", "Эмилия", "Кинич", "Коллеи", "Яо Яо", "Кирара", "Кавех"],
+            "Крио ❄️": ["Аяка", "Гань Юй", "Шэнь Хэ", "Эола", "Ризли", "Ци Ци", "Диона", "Розария", "Лайла", "Шарлотта", "Кейя", "Чун Юнь", "Мика", "Фремине", "Ситлали"],
+            "Гео 🪨": ["Чжун Ли", "Итто", "Навия", "Тиори", "Альбедо", "Шилонен", "Нин Гуан", "Горо", "Юнь Цзинь", "Ноэлль", "Качина"]
+        };
+
+        // Логика Мобильного Drag-n-Drop
+        let isDragging = false;
+        let dragGhost = null;
+        let dragId = null;
+        let dragTimer = null;
+
+        function handleTouchStart(e, id) {
+            const target = e.currentTarget;
+            dragTimer = setTimeout(() => {
+                isDragging = true;
+                dragId = id;
+                document.body.style.overflow = 'hidden'; // Запрет скролла при перетаскивании
+                
+                dragGhost = target.cloneNode(true);
+                dragGhost.style.position = 'fixed';
+                dragGhost.style.zIndex = '9999';
+                dragGhost.style.opacity = '0.8';
+                dragGhost.style.pointerEvents = 'none';
+                document.body.appendChild(dragGhost);
+                
+                const touch = e.touches[0];
+                moveGhost(touch.clientX, touch.clientY);
+                target.style.opacity = '0.3';
+            }, 300); // 300мс удержание для старта перетаскивания (чтобы обычный клик работал)
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging) { clearTimeout(dragTimer); return; }
+            e.preventDefault();
+            const touch = e.touches[0];
+            moveGhost(touch.clientX, touch.clientY);
+        }
+
+        function handleTouchEnd(e) {
+            clearTimeout(dragTimer);
+            if (!isDragging) return;
+            
+            document.body.style.overflow = '';
+            e.currentTarget.style.opacity = '1';
+            
+            if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+            
+            const touch = e.changedTouches[0];
+            const dropElem = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (dropElem) {
+                const section = dropElem.closest('.section');
+                if (section) {
+                    const char = db.find(x => x.id == dragId);
+                    if (char) { char.status = section.id; saveDB(); renderGrid(); }
+                }
+            }
+            isDragging = false; dragId = null;
+        }
+
+        function moveGhost(x, y) {
+            if (dragGhost) {
+                dragGhost.style.left = (x - 70) + 'px'; // Центрируем (половина ширины)
+                dragGhost.style.top = (y - 90) + 'px';  // Центрируем (половина высоты)
+            }
+        }
+
         function renderGrid() {
             ['priority', 'built', 'other'].forEach(type => {
                 const grid = document.getElementById(`grid-${type}`);
                 grid.innerHTML = `<div class="add-btn" onclick="addNew('${type}')">+</div>`;
                 db.filter(c => (c.status || 'other') === type).forEach(c => {
-                    grid.innerHTML += `<div class="char-card ${c.rarity}" draggable="true" ondragstart="drag(event, ${c.id})" onclick="openModal(${c.id})">
+                    grid.innerHTML += `<div class="char-card ${c.rarity}" draggable="true" 
+                        ondragstart="drag(event, ${c.id})" 
+                        onclick="if(!isDragging) openModal(${c.id})"
+                        ontouchstart="handleTouchStart(event, ${c.id})"
+                        ontouchmove="handleTouchMove(event)"
+                        ontouchend="handleTouchEnd(event)"
+                        ontouchcancel="handleTouchEnd(event)">
                         <img src="${c.img || ''}" class="char-icon" onerror="this.src='https://placehold.co/110x110/23232d/d3bc8e?text=?'">
                         <div class="char-name">${c.name}</div><div class="char-lvl">${c.lvl}</div>
                     </div>`;
@@ -268,6 +375,34 @@
             localStorage.setItem('genshin_ultra_db', JSON.stringify(db));
         }
 
+        // Логика быстрого добавления
+        function openQuickAdd() {
+            const container = document.getElementById('qa-container');
+            container.innerHTML = '';
+            for(let element in genshinChars) {
+                let html = `<div class="qa-element-group"><h3 class="qa-element-title">${element}</h3>`;
+                genshinChars[element].forEach(char => {
+                    html += `<label class="qa-char-label"><input type="checkbox" value="${char}" class="qa-cb"> ${char}</label>`;
+                });
+                html += `</div>`;
+                container.innerHTML += html;
+            }
+            document.getElementById('quickAddModal').style.display = 'flex';
+        }
+
+        function closeQuickAdd() { document.getElementById('quickAddModal').style.display = 'none'; }
+
+        function applyQuickAdd() {
+            const checkboxes = document.querySelectorAll('.qa-cb:checked');
+            checkboxes.forEach((cb, i) => {
+                db.push({
+                    id: Date.now() + i, name: cb.value, status: 'other', rarity: 'rarity-5', lvl: '1 | C0', todos: []
+                });
+            });
+            saveDB(); renderGrid(); closeQuickAdd();
+        }
+
+        // ПК Drag-n-Drop
         function drag(ev, id) { ev.dataTransfer.setData("charId", id); }
         function allowDrop(ev) { ev.preventDefault(); }
         function drop(ev, newStatus) {
@@ -302,6 +437,11 @@
             for(let i=1; i<=3; i++) {
                 document.getElementById(`vS${i}n`).innerText = c[`s${i}n`] || `—`;
                 document.getElementById(`vS${i}i`).src = c[`s${i}i`] || 'https://placehold.co/90x90/16161c/333?text=?';
+                // Снаряжение саппортов
+                const wSlot = document.getElementById(`vS${i}w`);
+                wSlot.innerHTML = c[`s${i}w`] ? `<img src="${c[`s${i}w`]}">` : '';
+                const aSlot = document.getElementById(`vS${i}a`);
+                aSlot.innerHTML = c[`s${i}a`] ? `<img src="${c[`s${i}a`]}">` : '';
             }
             renderTodos();
             document.getElementById('modal').style.display = 'flex';
@@ -317,14 +457,14 @@
             const p = document.getElementById('editPanel'); const c = db.find(x => x.id === curId);
             p.style.display = p.style.display === 'none' ? 'block' : 'none';
             if(p.style.display === 'block') {
-                const fields = ['Name','Img','Lvl','Rar','Farm','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S2n','S2i','S3n','S3i'];
+                const fields = ['Name','Img','Lvl','Rar','Farm','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S1w','S1a','S2n','S2i','S2w','S2a','S3n','S3i','S3w','S3a'];
                 fields.forEach(f => document.getElementById('e'+f).value = c[f.toLowerCase()] || '');
             }
         }
 
         function saveData() {
             const c = db.find(x => x.id === curId);
-            const fields = ['Name','Img','Lvl','Rar','Farm','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S2n','S2i','S3n','S3i'];
+            const fields = ['Name','Img','Lvl','Rar','Farm','W','Wt','A1','A1t','A2','A2t','B','Bk','AF','AL','AS','AC','AH','Rot','Notes','S1n','S1i','S1w','S1a','S2n','S2i','S2w','S2a','S3n','S3i','S3w','S3a'];
             fields.forEach(f => c[f.toLowerCase()] = document.getElementById('e'+f).value);
             saveDB(); renderGrid(); openModal(curId);
         }
@@ -373,5 +513,7 @@
         function saveDB() { localStorage.setItem('genshin_ultra_db', JSON.stringify(db)); }
         renderGrid();
     </script>
+</body>
+</html>
 </body>
 </html>
